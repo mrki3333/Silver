@@ -1,0 +1,289 @@
+/* Reset osnovnih stilova */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f9f9f9;
+    color: #333;
+    line-height: 1.6;
+    margin: 0;
+}
+
+/* Navigacija */
+nav {
+    background: #00805a;
+    color: white;
+    padding: 1rem 2rem;
+    text-align: center;
+    font-size: 1.2rem;
+    font-weight: bold;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* Glavni container */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 1rem;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+/* Forme */
+form {
+    width: 100%;
+    max-width: 600px;
+    background: white;
+    padding: 1rem;
+    margin: 1rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+form label {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 1rem;
+    font-weight: bold;
+    font-size: 0.9rem;
+    width: 100%; /* Da zauzima celu širinu */
+}
+
+form input, form select {
+    margin-top: 0.5rem;
+    height: 2.5rem;
+    padding: 0.5rem;
+    border: 1px solid #bfbfbf;
+    border-radius: 4px;
+    font-size: 1rem;
+    width: 100%; /* Elementi zauzimaju punu širinu */
+}
+
+form button{
+    border: none;
+    background: #00805a;
+    color: white;
+    padding: 0.8rem;
+    font-size: 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+    margin-top: 1rem;
+    width: 100%; /* Dugme zauzima punu širinu forme */
+}
+
+form button:hover {
+    background: #006747;
+}
+.stavkeDiv {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem; /* Razmak između stavki */
+    margin: 2rem auto;
+    padding: 1rem;
+    width: 100%; /* Osiguraj da zauzima cijelu širinu */
+    max-width: 1200px; /* Postavi maksimalnu širinu */
+}
+
+/* Stil za pojedinačne stavke */
+.stavke {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr auto auto; /* Prilagođene širine kolona */
+    grid-template-rows: auto; /* Automatska visina redova */
+    gap: 0.5rem; /* Razmak između ćelija */
+    padding: 1rem;
+    margin-bottom: 1rem;
+    background: #f1f1f1;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    align-items: center;
+
+    
+}
+
+.stavke p{
+    margin: 0; /* Ukloni razmake */
+    padding: 0.5rem; /* Dodaj unutrašnji razmak */
+    border-right: 1px solid #b3b2b2; /* Linija između ćelija */
+    font-size: 13px;
+    text-align: center
+}
+/* Tekstualni podaci unutar stavkaaaaaaaaai */
+.stavkeInfo {
+    text-align: left; /* Poravnanje na lijevo */
+    font-size: 1rem;
+}
+
+/* Gumb za brisanje */
+.deleteButton {
+    border: none;
+    background: #b10000;
+    color: white;
+    font-size: 0.9rem;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    max-width: fit-content;
+    cursor: pointer;
+    transition: background 0.3s ease;
+    justify-self: end; /* Gumb poravnat desno */
+}
+.deleteButton:hover {
+    background: #8b0000;
+}
+
+
+/* Radio grupa: centriraj sve u jednom redu */
+.radio-group {
+    display: flex; /* Postavlja radio gumbe i tekst horizontalno */
+    align-items: center; /* Vertikalno centriraj gumbe i tekst */
+    gap: 2rem; /* Razmak između opcija (Račun i Ponuda) */
+}
+
+/* Pojedinačni radio gumbi i tekst */
+.radio-group label {
+    display: flex; /* Postavi radio gumb i njegov tekst zajedno */
+    align-items: center; /* Vertikalno poravnaj radio gumb i tekst */
+    gap: 0.5rem; /* Razmak između radio gumba i njegovog teksta */
+    font-weight: normal; /* Normalan stil teksta */
+    cursor: pointer; /* Promeni kursor pri hoveru */
+}
+
+/* Radio dugme */
+input[type="radio"] {
+    appearance: none; /* Ukloni defaultni stil */
+    width: 1.2rem; /* Širina gumba */
+    height: 1.2rem; /* Visina gumba */
+    border: 2px solid #00805a; /* Rub gumba */
+    border-radius: 50%; /* Zaokruži gumb */
+    display: inline-block;
+    position: relative;
+    cursor: pointer;
+    margin: 0; /* Ukloni sve defaultne margine */
+}
+
+/* Stil za odabrani radio gumb */
+input[type="radio"]:checked {
+    background-color: #00805a; /* Boja popunjavanja */
+    border-color: #006747; /* Promeni rub kada je izabran */
+}
+
+/* Tekst pored radio gumba */
+.radio-group label span {
+    font-size: 1rem; /* Font veličina */
+    color: #333; /* Boja teksta */
+    line-height: 1; /* Osigurava da tekst stoji u liniji s gumbom */
+}
+
+
+/* Prikaz ukupne cijene */
+#ukupnaCijenaDiv {
+    text-align: center;
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin: 0.5rem auto; /* Dodaje razmak iznad i ispod */
+    background: #ffffff; /* Svetla pozadina za testiranje */
+    padding: 1rem;
+    margin-top: 40px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    max-width: 1000px; /* Postavlja maksimalnu širinu */
+    width: 100%; /* Osigurava da zauzima punu širinu kontejnera */
+}
+
+#ukupnaCijenaDiv2 {
+    text-align: center;
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin: 0.5rem auto; /* Dodaje veći razmak iznad i ispod */
+    background: #ffffff; /* Svetla pozadina za testiranje */
+    padding: 1rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    max-width: 1000px; /* Postavlja maksimalnu širinu */
+    width: 100%; /* Osigurava da zauzima punu širinu kontejnera */
+}
+
+/* Stil za formu stavki */
+#stavkeForm{
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    align-items: center;
+    
+}
+#spremiRacunButton{
+    border: none;
+    background: #00805a;
+    color: white;
+    padding: 0.8rem;
+    font-size: 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+    margin-top: 1rem;
+    width: 100%; /* Dugme zauzima punu širinu forme */
+}
+/* Stil za "Jedinica mjere" */
+label[for="jedinicaMjere"] {
+    display: flex; /* Koristi fleksibilni layout */
+    align-items: left; /* Vertikalno poravnaj tekst i dropdown */
+    gap: 0.5rem; /* Razmak između teksta i dropdown-a */
+    width: 100%;
+}
+
+#jedinicaMjere {
+    flex-grow: 1; /* Dropdown zauzima sav preostali prostor */
+    height: 2.5rem;
+    padding: 0.5rem;
+    font-size: 1rem;
+    border: 1px solid #bfbfbf;
+    border-radius: 4px;
+    width: 100%;
+}
+
+    /* Mobilna prilagodba */
+
+@media (max-width: 480px) {
+     .container {
+     flex-direction: column; /* Prikaz elemenata jedan ispod drugog */
+     align-items: center; /* Centriraj elemente horizontalno */
+    }
+
+    form {
+        width: 90%; /* Forma zauzima 90% širine ekrana */
+        max-width: 500px; /* Maksimalna širina forme */
+        margin: 1rem auto; /* Centriranje forme vertikalno i horizontalno */
+    }
+
+    .stavke {
+        grid-template-columns: 1fr; /* Stavke u jednom stupcu */
+        gap: 0.5rem;
+        width: 100%;
+    }
+
+        .deleteButton {
+        width: 100%; /* Dugme zauzima punu širinu */
+        text-align: center;
+    }
+    #stavkeForm {
+        display: grid; /* Koristi grid za prilagodbu elemenata */
+        grid-template-columns: 1fr; /* Svi elementi u jednom stupcu */
+        gap: 1rem; /* Razmak između elemenata */
+        width: 100%; /* Zauzima punu širinu */
+    }
+
+
+    #novaPonuda {
+        width: 90%; /* Gumb zauzima 90% širine ekrana */
+        margin: 1rem auto; /* Centriranje gumba */
+    }
+}
+
+
+

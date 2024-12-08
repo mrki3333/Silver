@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="icon" href="./stavke/icon-192.png">
+    <link rel="stylesheet" href="./izrada.css">
+    <script src="https://cdn.jsdelivr.net/npm/dexie@3.0.3/dist/dexie.min.js"></script>
+</head>
+<body>
+    <!-- Navigacija -->
+    <nav>
+        <p>Unos</p>
+    </nav>
+   <!-- Ostali podaci -->
+   <div class="container">
+    <form id="ostaliPodatciForm" class="form-container">
+        <label>
+            Vrsta dokumenta:
+        </label>
+        <br>
+        <div class="radio-group">
+            <label>
+                <input type="radio" id="racun" name="vrstaDokumenta" value="račun" required>
+                <span>Račun</span>
+            </label>
+            <label>
+                <input type="radio" id="ponuda" name="vrstaDokumenta" value="ponuda">
+                <span>Ponuda</span>
+            </label>
+        </div>
+        
+        <br>
+        <label>
+            Datum:
+            <input type="date" id="datumRacuna" required>
+        </label>
+        <label>
+            Vrijeme:
+            <input type="time" id="vrijemeRacuna" required>
+        </label>
+        <label>
+            Broj računa/ponude:
+            <input type="text" id="brojRacuna" required>
+        </label>
+        <label>
+            Kupac:
+            <input type="text" id="kupac" required>
+        </label>
+        <label>
+            Adresa:
+            <input type="text" id="adresa" required>
+        </label>
+        <label>
+            OIB:
+            <input type="text" id="OIB" required>
+        </label>
+        <!-- <div class="buttonParent">
+            <button type="submit" id="dodajDatum">Dodaj</button>
+        </div> -->
+    </form>
+</div>
+
+    <!-- Forme za unos stavki -->
+    <div class="container">
+        <form id="stavkeForm" class="form-container">
+            <label>
+                Stavka:
+                <input type="text" id="nazivStavke" required>
+            </label>
+            <label for="jedinicaMjere">
+                Jedinica mjere:
+                <select id="jedinicaMjere">
+                    <option value="pauš">pauš</option>
+                    <option value="h">h</option>
+                    <option value="kg">kg</option>
+                    <option value="kom">kom</option>
+                </select>
+            </label>
+            <label>
+                Količina:
+                <input type="number" id="kolicinaStavke" value="1" required>
+            </label>
+            <label>
+                Cijena:
+                <input type="text" id="cijenaStavke" value="0" required>
+            </label>
+            <div class="buttonParent">
+                <button type="submit" id="dodajStavke">Dodaj stavku</button>
+            </div>
+        </form>
+    </div>
+
+ 
+    <!-- Prikaz stavki -->
+    <div id="stavkeDiv" class="container">
+
+    </div>
+    <div id="ukupnaCijenaDiv">Ukupna cijena: 0.00 €</div>
+    <div id="ukupnaCijenaDiv2">Ukupna cijena s PDV-om: 0.00 €</div>
+    
+    <div class="container">
+        <button onclick="spremiRacun"  style="width: 50%;" id="spremiRacunButton">Spremi račun/ponudu</button>
+    </div>
+    
+    <script src="./izrada.js"></script>
+    
+</body>
+</html>
+ 

@@ -1,0 +1,154 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f9f9f9;
+    color: #333;
+    line-height: 1.6;
+    margin: 0;
+    padding: 0;
+}
+
+nav {
+    background: #00805a;
+    color: white;
+    padding: 1rem 2rem;
+    text-align: center;
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.container {
+    max-width: 800px;
+    margin: 2rem auto;
+    padding: 1rem;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+h2 {
+    margin-bottom: 1rem;
+}
+#racuniLista .racun {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr auto auto; /* Prilagođene širine kolona */
+    grid-template-rows: auto; /* Automatska visina redova */
+    gap: 0.5rem; /* Razmak između ćelija */
+    padding: 1rem;
+    margin-bottom: 1rem;
+    background: #f1f1f1;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    align-items: center;
+}
+
+#racuniLista .racun p {
+    margin: 0; /* Ukloni razmake */
+    padding: 0.5rem; /* Dodaj unutrašnji razmak */
+    border-right: 1px solid #b3b2b2; /* Linija između ćelija */
+}
+
+#racuniLista .racun p:last-child {
+    border-right: none; /* Ukloni liniju za poslednju ćeliju */
+}
+#racuniLista .racun .dvaButtona button {
+    max-width: 100px; /* Fiksna širina dugmadi */
+    padding: 0.5rem; /* Dodajte unutrašnji razmak */
+    text-align: center; /* Horizontalno centriranje teksta */
+    display: flex; /* Omogućava korišćenje flexbox za centriranje */
+    justify-content: center; /* Horizontalno centriranje */
+    align-items: center; /* Vertikalno centriranje */
+    height: auto; /* Osigurajte da visina dugmeta odgovara sadržaju */
+}
+
+#racuniLista .racun .dvaButtona button {
+    max-width: 100px; /* Fiksna širina dugmadi */
+    padding: 0.5rem;
+}
+
+#racuniLista .racun .dvaButtona button.openButton {
+    background: #00805a;
+    color: white;
+}
+
+#racuniLista .racun .dvaButtona button.deleteButton {
+    background: #b10000;
+    color: white;
+}
+
+#racuniLista .racun .dvaButtona button:hover {
+    opacity: 0.9;
+}
+
+
+.racun p {
+    margin: 0;
+    font-size: 1rem;
+    word-wrap: break-word; /* Osigurava prikaz dugog teksta */
+}
+
+/* Gumbi za "Obriši" i "Otvori" */
+button.deleteButton{
+    font-size: 0.8rem;
+    padding: 0.6rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    width: 90%; /* Fleksibilna širina na mobilnim uređajima */
+    margin: 0 auto; /* Centriraj dugme */
+    text-align: center;
+    background-color: #c00404;
+    color: #f9f9f9;
+}
+button.openButton {
+    font-size: 0.8rem;
+    padding: 0.6rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    width: 90%; /* Fleksibilna širina na mobilnim uređajima */
+    margin: 0 auto; /* Centriraj dugme */
+    text-align: center;
+    background-color: #00805a;
+    color: #f9f9f9;
+    }
+
+button.deleteButton:hover {
+    background: #8b0000;
+}
+
+button#novaPonuda {
+    background: #00805a;
+    color: white;
+    font-size: 1rem;
+    padding: 0.8rem 1.2rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    display: block;
+    margin: 0 auto;
+    transition: background 0.3s ease;
+}
+
+button#novaPonuda:hover {
+    background: #006747;
+}
+@media (max-width: 450px) {
+    #racuniLista .racun {
+        grid-template-columns: 1fr; /* Sve stavke u jednom stupcu */
+        text-align: left; /* Poravnanje teksta ulevo */
+        padding: 1rem;
+    }
+
+    #racuniLista .racun p {
+        font-size: 0.9rem; /* Smanji font za manji ekran */
+    }
+
+    button.deleteButton,
+    button.openButton {
+        font-size: 0.9rem;
+        padding: 0.5rem;
+        width: 100%; /* Dugme zauzima punu širinu */
+        margin: 0.5rem auto; /* Razmak između dugmadi */
+    }
+}
