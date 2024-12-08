@@ -134,14 +134,10 @@ button#novaPonuda:hover {
     background: #006747;
 }
 @media (max-width: 450px) {
-    #racuniLista .racun {
-        grid-template-columns: 1fr; /* Sve stavke u jednom stupcu */
-        text-align: left; /* Poravnanje teksta ulevo */
-        padding: 1rem;
-    }
+
 
     #racuniLista .racun p {
-        font-size: 0.9rem; /* Smanji font za manji ekran */
+        font-size: 0.8rem; /* Smanji font za manji ekran */
     }
 
     button.deleteButton,
