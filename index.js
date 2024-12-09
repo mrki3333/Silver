@@ -24,10 +24,10 @@ async function loadInvoices() {
 
         // Prikaži osnovne podatke o računu
         racunDiv.innerHTML = `
-        <p>${formattedDate}</p>
-        <p style="padding-left:2px;"><span style="font-weight: bold;">BROJ:</span> ${invoice.invoiceNumber}</p>
-        <p>${invoice.buyer}</p>
-        <p>${invoice.totalPrice} €</p>
+        <p><span style="font-weight: bold;">DATUM:</span> ${formattedDate}</p>
+        <p><span style="font-weight: bold;">BROJ:</span> ${invoice.invoiceNumber}</p>
+        <p><span style="font-weight: bold;">KUPAC:</span> ${invoice.buyer}</p>
+        <p><span style="font-weight: bold;">CIJENA:</span> ${invoice.totalPrice} €</p>
         <div class="dvaButtona">
             <button class="openButton" data-id="${invoice.id}">Otvori</button>
             <button class="deleteButton" data-id="${invoice.id}">Obriši</button>

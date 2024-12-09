@@ -88,24 +88,19 @@ function addStavkaToDOM({ id, name, quantity, unit, price }) {
     stavkaDiv.innerHTML = `
 
         <div class="stavkeInfo">
-            <p style="font-weight:bold">OPIS:</p>
-            <p>${name}</p>
+            <p><span style="font-weight: bold;">OPIS:</span> ${name}</p>
         </div>
         <div class="stavkeInfo">
-            <p style="font-weight:bold">CIJENA:</p>
-            <p>${price}€</p>
+            <p><span style="font-weight: bold;">CIJENA:</span> ${price}€</p>
         </div>
         <div class="stavkeInfo">
-            <p style="font-weight:bold">KOLIČINA:</p>
-            <p>${quantity}</p>
+            <p><span style="font-weight: bold;">KOLIČINA:</span> ${quantity}</p>
         </div>
         <div class="stavkeInfo">
-            <p style="font-weight:bold">JED. MJERE:</p>
-            <p style="alling-items: center">${unit}</p>
+            <p style="alling-items: center"><span style="font-weight: bold;">JED. MJERE:</span> ${unit}</p>
         </div>
         <div class="stavkeInfo">
-            <p style="font-weight:bold">IZNOS:</p>
-            <p>${(price * quantity).toFixed(2)}€</p>
+            <p><span style="font-weight: bold;">IZNOS:</span> ${(price * quantity).toFixed(2)}€</p>
         </div>
         <button class="deleteButton">X</button>
 

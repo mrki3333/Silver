@@ -111,8 +111,8 @@ form button:hover {
     margin: 0; /* Ukloni razmake */
     padding: 0.5rem; /* Dodaj unutrašnji razmak */
     border-right: 1px solid #b3b2b2; /* Linija između ćelija */
-    font-size: 13px;
-    text-align: center
+    font-size: 18px;
+    text-align: left
 }
 /* Tekstualni podaci unutar stavkaaaaaaaaai */
 .stavkeInfo {
@@ -128,10 +128,9 @@ form button:hover {
     font-size: 0.9rem;
     padding: 0.5rem 1rem;
     border-radius: 4px;
-    max-width: fit-content;
     cursor: pointer;
     transition: background 0.3s ease;
-    justify-self: end; /* Gumb poravnat desno */
+
 }
 .deleteButton:hover {
     background: #8b0000;
@@ -249,11 +248,8 @@ label[for="jedinicaMjere"] {
 
     /* Mobilna prilagodba */
 
-@media (max-width: 480px) {
-     .container {
-     flex-direction: column; /* Prikaz elemenata jedan ispod drugog */
-     align-items: center; /* Centriraj elemente horizontalno */
-    }
+@media (max-width: 600px) {
+
 
     form {
         width: 90%; /* Forma zauzima 90% širine ekrana */
@@ -261,14 +257,21 @@ label[for="jedinicaMjere"] {
         margin: 1rem auto; /* Centriranje forme vertikalno i horizontalno */
     }
 
-
+    .stavke {
+        grid-template-columns: 1fr; /* Stavke u jednom stupcu */
+        gap: 0.5rem;
+        width: 100%;
+    }
     .stavke p{
-        font-size: 0.67rem;
+        font-size: 1.1rem;
+        border-bottom: 1px solid #b3b2b2; /* Linija između ćelija */
+        border-right: 0px;
     }
 
-        .deleteButton {
+        button.deleteButton {
         width: 100%; /* Dugme zauzima punu širinu */
         text-align: center;
+    
     }
     #stavkeForm {
         display: grid; /* Koristi grid za prilagodbu elemenata */
@@ -276,12 +279,11 @@ label[for="jedinicaMjere"] {
         gap: 1rem; /* Razmak između elemenata */
         width: 100%; /* Zauzima punu širinu */
     }
+    .spremiRacunButton {
+        width: 100%; /* Dugme zauzima punu širinu */
+        text-align: center;
+        justify-content: center;
 
-
-    #novaPonuda {
-        width: 90%; /* Gumb zauzima 90% širine ekrana */
-        margin: 1rem auto; /* Centriranje gumba */
-    }
 }
 
 
