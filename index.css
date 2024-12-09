@@ -142,6 +142,8 @@ button#novaPonuda:hover {
 
     #racuniLista .racun p {
         font-size: 1.1rem; /* Smanji font za manji ekran */
+        border-bottom: 1px solid #b3b2b2; /* Linija između ćelija */
+        border-right: 0px;
     }
 
     button.deleteButton,
