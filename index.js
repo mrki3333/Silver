@@ -4,8 +4,17 @@ db.version(2).stores({
     items: '++id, name, quantity, unit, price, invoiceId', // Tabela za stavke
     invoice: '++id, type, date, time, invoiceNumber, buyer, adress, oib, totalPrice' // Tabela za račune
 });
-
-// Element za prikaz računa
+const firebaseConfig = {
+    apiKey: "AIzaSyCJMWYFiXFXLFqyE4TwADwdLgNfTIHuXUg",
+    authDomain: "silver-fa4e9.firebaseapp.com",
+    databaseURL:"https://silver-fa4e9-default-rtdb.europe-west1.firebasedatabase.app/",
+    projectId: "silver-fa4e9",
+    storageBucket: "silver-fa4e9.firebasestorage.app",
+    messagingSenderId: "993522816037",
+    appId: "1:993522816037:web:2ca86066b63df96c169bcc",
+};
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
 const racuniLista = document.getElementById('racuniLista');
 
 // Funkcija za učitavanje svih računa iz baze

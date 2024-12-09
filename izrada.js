@@ -4,6 +4,19 @@ db.version(2).stores({
     items: '++id, name, quantity, unit, price, invoiceId', // Tabela za stavke
     invoice: '++id, type, date, time, invoiceNumber, buyer, adress, oib, totalPrice' // Tabela za račune
 });
+import { initializeApp } from "firebase/app";
+import { getDatabase } from "firebase/database";
+const firebaseConfig = {
+    apiKey: "AIzaSyCJMWYFiXFXLFqyE4TwADwdLgNfTIHuXUg",
+    authDomain: "silver-fa4e9.firebaseapp.com",
+    databaseURL:"https://silver-fa4e9-default-rtdb.europe-west1.firebasedatabase.app/",
+    projectId: "silver-fa4e9",
+    storageBucket: "silver-fa4e9.firebasestorage.app",
+    messagingSenderId: "993522816037",
+    appId: "1:993522816037:web:2ca86066b63df96c169bcc",
+};
+const app = initializeApp(firebaseConfig);
+const database = getDatabase(app);
 
 let currentInvoiceId = null; // Čuva ID trenutno kreiranog računa
 let sum = 0;
@@ -27,10 +40,13 @@ async function createInvoiceIfNotExists() {
 
         // Validacija
         if (!type || !date || !time || !invoiceNumber || !buyer || !adress || !oib) {
-            alert('Morate kreirati račun pre dodavanja stavki.');
+            alert('Upiši sve stavke u račun/ponudu.');
             return null;
         }
-
+        if (!/^\d{11}$/.test(oib)) {
+            alert('OIB mora imati točno 11 znamenki.');
+            return null;
+        }
         // Kreiraj račun i čuvaj njegov ID
         currentInvoiceId = await db.invoice.add({
             type,
@@ -42,8 +58,6 @@ async function createInvoiceIfNotExists() {
             oib,
             totalPrice: 0, // Početna ukupna cena
         });
-
-        alert(`Račun kreiran s ID: ${currentInvoiceId}`);
     }
     return currentInvoiceId;
 }
@@ -55,10 +69,7 @@ stavkeForm.onsubmit = async (event) => {
     // Proveri da li postoji račun, ako ne - kreiraj ga
     const invoiceId = await createInvoiceIfNotExists();
 
-    if (!invoiceId) {
-        alert('Morate kreirati račun pre dodavanja stavki.');
-        return;
-    }
+
 
     const name = document.getElementById('nazivStavke').value;
     const quantity = parseInt(document.getElementById('kolicinaStavke').value);
@@ -69,7 +80,11 @@ stavkeForm.onsubmit = async (event) => {
         alert('Molimo popunite sva polja na računu/ponudi');
         return;
     }
-
+    const oib = document.getElementById('OIB').value;
+    if (!/^\d{11}$/.test(oib)) {
+        alert('OIB mora imati točno 11 znamenki.');
+        return;
+    }
     // Dodavanje stavke u bazu
     const id = await db.items.add({ name, quantity, unit, price, invoiceId });
 
@@ -192,11 +207,23 @@ async function updateTotalPriceForInvoice(invoiceId) {
 const spremiRacunButton = document.getElementById('spremiRacunButton');
 spremiRacunButton.addEventListener('click', async () => {
     if (!currentInvoiceId) {
-        alert('Ispuni sve podatke o računu/ponudi');
+        alert('Dodaj bar jednu stavku');
         return;
     }
     await updateTotalPriceForInvoice(currentInvoiceId);
     window.location.href = './index.html'; // Vrati korisnika na početnu stranicu
 });
+import { getDatabase, ref, set } from "firebase/database";
+
+function writeUserData(userId, name, email) {
+  const db = getDatabase();
+  set(ref(db, 'users/' + userId), {
+    username: name,
+    email: email,
+  });
+}
+writeUserData('1', 'John Doe', 'john.doe@example.com');
+
+
 // Učitavanje stavki pri pokretanju
 //loadStavke();
