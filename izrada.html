@@ -3,12 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <link rel="icon" href="./stavke/icon-192.png">
+    <title>Izrada</title>
+    <link rel="icon" href="./stavke/icon-384.png">
     <link rel="stylesheet" href="./izrada.css">
     <script src="https://cdn.jsdelivr.net/npm/dexie@3.0.3/dist/dexie.min.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.2/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.2/firebase-database.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
 </head>
 <body>
     <!-- Navigacija -->
@@ -24,11 +25,11 @@
         <br>
         <div class="radio-group">
             <label>
-                <input type="radio" id="racun" name="vrstaDokumenta" value="račun" required>
+                <input type="radio" id="racun" name="vrstaDokumenta" value="Račun" required>
                 <span>Račun</span>
             </label>
             <label>
-                <input type="radio" id="ponuda" name="vrstaDokumenta" value="ponuda">
+                <input type="radio" id="ponuda" name="vrstaDokumenta" value="Ponuda">
                 <span>Ponuda</span>
             </label>
         </div>
@@ -103,10 +104,18 @@
     <div id="ukupnaCijenaDiv2">Ukupna cijena s PDV-om: 0.00 €</div>
     
     <div class="container">
-        <button onclick="spremiRacun"  style="width: 50%;" id="spremiRacunButton">Spremi račun/ponudu</button>
+        <button  style="width: 50%;" id="spremiRacunButton">Spremi račun/ponudu</button>
     </div>
-
-    <script src="./izrada.js"></script>
+    
+    <script src="https://www.gstatic.com/firebasejs/8.0.2/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.0.2/firebase-analytics.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.0.2/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.0.2/firebase-analytics.js"></script>
+    <script src="https://unpkg.com/pdf-lib@1.4.0"></script>
+    <script src="https://unpkg.com/@pdf-lib/fontkit@0.0.4"></script>
+    <script src="https://unpkg.com/downloadjs@1.4.7"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+    <script type="module" src="./izrada.js"></script>
 </body>
 </html>
  

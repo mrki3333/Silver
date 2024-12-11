@@ -33,7 +33,13 @@ nav {
     justify-content: center;
     flex-wrap: wrap;
 }
-
+.gumbiEditX{
+    margin: 0; /* Ukloni razmake */
+    padding: 0.5rem; /* Dodaj unutrašnji razmak */
+    border-right: 1px solid #b3b2b2; /* Linija između ćelija */
+    font-size: 18px;
+    text-align: center
+}
 /* Forme */
 form {
     width: 100%;
@@ -127,9 +133,24 @@ form button:hover {
     color: white;
     font-size: 0.9rem;
     padding: 0.5rem 1rem;
+    margin-bottom: 2px;
+    border-radius: 4px;
+    max-width: 76.81px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+
+
+}
+.editButton {
+    border: none;
+    background: #2c2c2c;
+    color: white;
+    font-size: 0.9rem;
+    padding: 0.5rem 1rem;
     border-radius: 4px;
     cursor: pointer;
     transition: background 0.3s ease;
+
 
 }
 .deleteButton:hover {
@@ -235,6 +256,8 @@ label[for="jedinicaMjere"] {
     gap: 0.5rem; /* Razmak između teksta i dropdown-a */
     width: 100%;
 }
+
+
 
 #jedinicaMjere {
     flex-grow: 1; /* Dropdown zauzima sav preostali prostor */

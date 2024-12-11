@@ -4,8 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Računi i ponude</title>
+    <link rel="icon" href="./stavke/icon-384.png">
     <link rel="stylesheet" href="./index.css">
     <script src="https://cdn.jsdelivr.net/npm/dexie@3.0.3/dist/dexie.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.17.2/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.17.2/firebase-database.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+    <script src="bcmath-min.js" type="text/javascript"></script>
+    <script src="pdf417-min.js" type="text/javascript"></script>	
+    
 </head>
 <body>
     <nav>
@@ -14,17 +21,26 @@
     <div class="container">
         <!-- Lista računa -->
         <div id="racuniDiv">
-            <h2>Posljednji računi i ponude:</h2>
+            <h2 style="text-align: center;">Posljednji računi i ponude:</h2>
+            <div class="buttonParent">
+                <button  style="margin-bottom: 40px;" id="novaPonuda" onclick="window.location.href='./izrada.html'">Izradi novu ponudu/račun</button>
+            </div>
             <div id="racuniLista"></div>
         </div>
 
         <!-- Gumb za prelazak na novu ponudu/račun -->
-        <div class="buttonParent">
-            <button id="novaPonuda" onclick="window.location.href='./izrada.html'">Izradi novu ponudu/račun</button>
-        </div>
     </div>
-    <script src="https://www.gstatic.com/firebasejs/9.17.2/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.17.2/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.0.2/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.0.2/firebase-analytics.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.0.2/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.0.2/firebase-analytics.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/fontkit@2.0.0/dist/fontkit.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+    <script src="https://unpkg.com/pdf-lib@1.4.0"></script>
+    <script src="https://unpkg.com/@pdf-lib/fontkit@0.0.4"></script>
+    <script src="https://unpkg.com/downloadjs@1.4.7"></script>
+    <script src="bcmath-min.js" type="text/javascript"></script>
+    <script src="pdf417-min.js" type="text/javascript"></script>	
     <script src="./index.js"></script>
 </body>
 </html>
