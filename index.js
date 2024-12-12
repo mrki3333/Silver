@@ -204,7 +204,7 @@ document.addEventListener('click', async (event) => {
         });
 
         // Dohvati stavke povezane s originalnim računom
-        const itemsSnapshot = await firebase.database().ref('Items').orderByChild('id').equalTo(originalInvoiceId).once('value');
+        const itemsSnapshot = await items.orderByChild("invoiceId").equalTo(originalInvoiceId).once("value");
         const originalItems = itemsSnapshot.exists() ? Object.values(itemsSnapshot.val()) : [];
 
         // Kopiraj stavke u novi račun
