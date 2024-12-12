@@ -129,7 +129,7 @@ async function loadInvoicesGroupedByMonth() {
                         }
                     
                         // Dohvati sve stavke povezane s računom
-                        const itemsSnapshot = await firebase.database().ref('Items').orderByChild('invoiceId').equalTo(invoiceId).once('value');
+          		const itemsSnapshot = await items.orderByChild("invoiceId").equalTo(originalInvoiceId).once("value");
                         const items = itemsSnapshot.exists() ? Object.values(itemsSnapshot.val()) : [];
                     
                         console.log("Podaci o računu:", invoice);
