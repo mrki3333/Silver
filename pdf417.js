@@ -4,7 +4,7 @@
  * Ported from PHP - PDF417 class, version 1.0.005, from TCPDF library (http://www.tcpdf.org/)
  */
 var PDF417 = {
-	ROWHEIGHT: 4,
+	ROWHEIGHT: 6,
 	QUIETH: 2,
 	QUIETV: 2,
 

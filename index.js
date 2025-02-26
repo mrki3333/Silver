@@ -235,6 +235,9 @@ async function generatePdf(buyer, adress, oib, type, invoiceNumber, date, time, 
     let priceInCents = Math.round(totalPrice * 100);
     // Formatiraj broj na 15 znamenki s vodećim nulama
     priceInCents = priceInCents.toString().padStart(15, '0');
+    let newDate = (formatDate(date));
+    newDate = newDate.replace(".", "-");
+    newDate = newDate.replace(".", "-");
     const hub3_code = 
     "HRVHUB30\n" + 
     "EUR\n" +
@@ -247,7 +250,7 @@ async function generatePdf(buyer, adress, oib, type, invoiceNumber, date, time, 
     "\n"+
     "HR8123400091160404436\n"+
     "HR00\n"+
-    "\n"+
+    newDate + "\n" +
     "\n"+
     "Plaćanje računa br." + invoiceNumber; 
 
@@ -325,10 +328,10 @@ async function generatePdf(buyer, adress, oib, type, invoiceNumber, date, time, 
       // Dodaj bar kod u donji lijevi kut (koristimo koordinate x = 50, y = 50)
       if(type == "Račun"){
         firstPage.drawImage(pngImage, {
-            x: inchesToPoints(1),  // Donji lijevi kut
-            y: pageHeight - inchesToPoints(10.5),
-            width: pngDims.width,
-            height: pngDims.height,
+            x: inchesToPoints(1.2),  // Donji lijevi kut
+            y: pageHeight - inchesToPoints(10.2),
+            width: (pngDims.width)*0.85,
+            height: (pngDims.height)*0.85,
         });
       }
 
@@ -451,6 +454,12 @@ async function generatePdf(buyer, adress, oib, type, invoiceNumber, date, time, 
         currentY -= inchesToPoints(0.38); // Koristimo istu visinu kao za ostale stavke
         }
         
+        if(type == "Račun"){
+            drawTextWithoutKerning(firstPage, "Račun sastavio: Silvije Barbarić", inchesToPoints(0.72), pageHeight - inchesToPoints(8.6), CalibriBold, 9, rgb(0, 0, 0));
+        }
+        else{
+            drawTextWithoutKerning(firstPage, "Ponudu sastavio: Silvije Barbarić", inchesToPoints(0.72), pageHeight - inchesToPoints(8.6), CalibriBold, 9, rgb(0, 0, 0));
+        }
 
       const pdfBytes = await pdfDoc.save()
 
