@@ -28,9 +28,15 @@ function groupInvoicesByMonth(invoices) {
 
     invoices.forEach((invoice) => {
         const date = new Date(invoice.date);
-        const year = date.getFullYear();
-        const month = String(date.getMonth() + 1).padStart(2, '0'); // Dodaj 0 ispred jednocifrenih mjeseci
-        const key = `${month}/${year}`;
+
+        let key;
+        if (isNaN(date.getTime())) {
+            key = "Nedovršeni računi/ponude"; // Ako je datum neispravan
+        } else {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            key = `${month}/${year}`; // Formatirano kao MM/YYYY
+        }
 
         if (!groupedInvoices[key]) {
             groupedInvoices[key] = [];
@@ -41,6 +47,7 @@ function groupInvoicesByMonth(invoices) {
 
     return groupedInvoices;
 }
+
 
 // Element za prikaz računa
 const racuniLista = document.getElementById('racuniLista');
