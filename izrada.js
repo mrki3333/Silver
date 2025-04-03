@@ -103,25 +103,24 @@ stavkeForm.onsubmit = async (event) => {
     stavkeForm.reset();
 };
 
-
-// Funkcija za dodavanje stavki u DOM
 function addStavkaToDOM({ id, name, quantity, unit, price }) {
     const stavkaDiv = document.createElement("div");
     stavkaDiv.classList.add("stavke");
     stavkaDiv.dataset.id = id;
 
+    // Provjera je li jedinica mjere "m2" i formatiranje ispisa
+    const displayUnit = unit.toLowerCase() === "m2" ? "m²" : unit;
+
     stavkaDiv.innerHTML = `
         <div class="stavkeInfo"><p><strong>OPIS:</strong> ${name}</p></div>
         <div class="stavkeInfo"><p><strong>CIJENA:</strong> ${price}€</p></div>
         <div class="stavkeInfo"><p><strong>KOLIČINA:</strong> ${quantity}</p></div>
-        <div class="stavkeInfo"><p><strong>JED. MJERE:</strong> ${unit}</p></div>
+        <div class="stavkeInfo"><p><strong>JED. MJERE:</strong> ${displayUnit}</p></div>
         <div class="stavkeInfo"><p><strong>IZNOS:</strong> ${(price * quantity).toFixed(2)}€</p></div>
-        <div class = "gumbiEditX">
+        <div class="gumbiEditX">
             <button class="deleteButton">X</button>
             <button class="editButton">UREDI</button>
         </div>
-
-
     `;
 
     azuriranjeCijene(price, quantity);
@@ -143,7 +142,6 @@ function addStavkaToDOM({ id, name, quantity, unit, price }) {
         // Ažuriranje ukupne cijene iz baze
         await updateInvoiceTotal();
     });
-
 }
 function editItem(name, price, quantity, unit) {
     // Popunjavanje forme sa podacima odabrane stavke
