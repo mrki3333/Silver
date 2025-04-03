@@ -41,7 +41,7 @@ function groupInvoicesByMonth(invoices) {
         if (!groupedInvoices[key]) {
             groupedInvoices[key] = [];
         }
-
+        
         groupedInvoices[key].push(invoice);
     });
 
@@ -206,7 +206,7 @@ document.addEventListener('click', async (event) => {
             id: newInvoiceId,
             date: '', // Datum ostavi prazan
             time: '', // Vrijeme ostavi prazno
-            invoiceNumber: `KOPIJA-${originalInvoice.invoiceNumber}`, // Dodaj oznaku kopije
+            invoiceNumber: '', // Dodaj oznaku kopije
             totalPrice: 0, // Početna ukupna cijena
         });
 

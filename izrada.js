@@ -22,6 +22,48 @@ const ukupnaCijenaDiv = document.getElementById("ukupnaCijenaDiv");
 const ukupnaCijenaDiv2 = document.getElementById("ukupnaCijenaDiv2");
 const stavkeDiv = document.getElementById("stavkeDiv");
 
+// Funkcija za dohvaćanje posljednjeg broja računa/ponude
+async function getLastInvoiceNumber(type) {
+    try {
+        const snapshot = await invoices
+            .orderByChild("type")
+            .equalTo(type)
+            .once("value");
+
+        if (!snapshot.exists()) {
+            return "Nema dostupnih računa";
+        }
+
+        const invoicesData = snapshot.val();
+        let lastInvoice = null;
+        let highestNumber = 0;
+
+        for (const key in invoicesData) {
+            const invoice = invoicesData[key];
+            const invoiceNumber = parseInt(invoice.invoiceNumber);
+            
+            if (!isNaN(invoiceNumber) && invoiceNumber > highestNumber) {
+                highestNumber = invoiceNumber;
+                lastInvoice = invoice;
+            }
+        }
+
+        return lastInvoice ? lastInvoice.invoiceNumber : "Nema dostupnih računa";
+    } catch (error) {
+        console.error("Greška pri dohvatu zadnjeg računa:", error);
+        return "Greška pri dohvatu";
+    }
+}
+
+// Funkcija za ažuriranje prikaza posljednjeg broja
+async function updateLastInvoiceDisplay() {
+    const selectedType = document.querySelector('input[name="vrstaDokumenta"]:checked')?.value;
+    if (selectedType) {
+        const lastNumber = await getLastInvoiceNumber(selectedType);
+        document.getElementById("zadnjiBrojInfo").textContent = `Posljednji broj ${selectedType}a: ${lastNumber}`;
+    }
+}
+
 // Funkcija za kreiranje računa
 async function createInvoiceIfNotExists() {
     if (!currentInvoiceId) {
@@ -53,20 +95,36 @@ async function createInvoiceIfNotExists() {
             buyer: buyer,
             adress: adress,
             oib: oib,
-            totalPrice: 0, // Početna cijena
+            totalPrice: 0,
         });
         currentInvoiceId = newInvoices.key;
         newInvoices.set({
             id: currentInvoiceId,
         });
+
+        // Osvježi prikaz posljednjeg broja
+        await updateLastInvoiceDisplay();
     }
     return currentInvoiceId;
 }
 
+// Event listeneri za radio buttone
+document.querySelectorAll('input[name="vrstaDokumenta"]').forEach(radio => {
+    radio.addEventListener('change', updateLastInvoiceDisplay);
+});
+
+// Inicijalno postavljanje pri učitavanju stranice
+document.addEventListener('DOMContentLoaded', async () => {
+    // Postavi defaultni tip ako je potrebno
+    const defaultType = document.querySelector('input[name="vrstaDokumenta"]:checked')?.value;
+    if (defaultType) {
+        await updateLastInvoiceDisplay();
+    }
+});
+
 stavkeForm.onsubmit = async (event) => {
     event.preventDefault();
 
-    // Provjeri postojanje računa
     const invoiceId = await createInvoiceIfNotExists();
     if (!invoiceId) {
         alert("Račun nije kreiran. Dodaj sve potrebne podatke.");
@@ -75,31 +133,25 @@ stavkeForm.onsubmit = async (event) => {
 
     const name = document.getElementById("nazivStavke").value;
     const quantity = parseInt(document.getElementById("kolicinaStavke").value);
-    const price = document.getElementById("cijenaStavke").value.replace(',', '.');  // Zamjena zareza s točkom
+    const price = document.getElementById("cijenaStavke").value.replace(',', '.');
     const unit = document.getElementById("jedinicaMjere").value;
 
-    // Validacija unosa stavki
     if (!name || isNaN(quantity) || isNaN(price) || !unit) {
         alert("Unesi sve podatke za stavku.");
         return;
     }
 
-    // Dodavanje stavke u bazu
     var newItem = items.push();
     newItem.set({
         invoiceId: invoiceId,
         name: name,
         quantity: quantity,
-        price: parseFloat(price),  // Parsiranje cijene s točkom
+        price: parseFloat(price),
         unit: unit,
     });
 
-    // Dodavanje u DOM
     addStavkaToDOM({ id: newItem.key, name, quantity, unit, price });
-    
-    // Ažuriraj ukupnu cijenu iz baze
     await updateInvoiceTotal();
-    
     stavkeForm.reset();
 };
 
@@ -108,14 +160,11 @@ function addStavkaToDOM({ id, name, quantity, unit, price }) {
     stavkaDiv.classList.add("stavke");
     stavkaDiv.dataset.id = id;
 
-    // Provjera je li jedinica mjere "m2" i formatiranje ispisa
-    const displayUnit = "m&sup2;";
-
     stavkaDiv.innerHTML = `
         <div class="stavkeInfo"><p><strong>OPIS:</strong> ${name}</p></div>
         <div class="stavkeInfo"><p><strong>CIJENA:</strong> ${price}€</p></div>
         <div class="stavkeInfo"><p><strong>KOLIČINA:</strong> ${quantity}</p></div>
-        <div class="stavkeInfo"><p><strong>JED. MJERE:</strong> ${displayUnit}</p></div>
+        <div class="stavkeInfo"><p><strong>JED. MJERE:</strong> ${unit}</p></div>
         <div class="stavkeInfo"><p><strong>IZNOS:</strong> ${(price * quantity).toFixed(2)}€</p></div>
         <div class="gumbiEditX">
             <button class="deleteButton">X</button>
@@ -126,67 +175,47 @@ function addStavkaToDOM({ id, name, quantity, unit, price }) {
     azuriranjeCijene(price, quantity);
     stavkeDiv.appendChild(stavkaDiv);
 
-    // Event za brisanje stavke
     stavkaDiv.querySelector(".deleteButton").addEventListener("click", deleteItem);
     stavkaDiv.querySelector(".editButton").addEventListener("click", async function() {
         editItem(name, price, quantity, unit);
-        const stavkaDiv = event.target.closest('.stavke');
+        const stavkaDiv = this.closest('.stavke');
         const stavkaId = stavkaDiv.dataset.id;
-    
-        // Brisanje stavke iz Firebase baze podataka
         await items.child(stavkaId).remove();
-        
-        // Uklanjanje stavke iz DOM-a
         stavkaDiv.remove();
-    
-        // Ažuriranje ukupne cijene iz baze
         await updateInvoiceTotal();
     });
 }
+
 function editItem(name, price, quantity, unit) {
-    // Popunjavanje forme sa podacima odabrane stavke
     document.getElementById('nazivStavke').value = name;
     document.getElementById('jedinicaMjere').value = unit;
     document.getElementById('kolicinaStavke').value = quantity;
     document.getElementById('cijenaStavke').value = price;
 }
-// Funkcija za brisanje stavke
+
 async function deleteItem(event) {
     const stavkaDiv = event.target.closest('.stavke');
     const stavkaId = stavkaDiv.dataset.id;
-
-    // Brisanje stavke iz Firebase baze podataka
     await items.child(stavkaId).remove();
-    
-    // Uklanjanje stavke iz DOM-a
     stavkaDiv.remove();
-
-    // Ažuriranje ukupne cijene iz baze
     await updateInvoiceTotal();
 }
 
-
-// Funkcija za ažuriranje cijene
 function azuriranjeCijene(price = 0, quantity = 0) {
-    // Ako su ovi parametri undefined, ne radi ništa
     if (price !== 0 && quantity !== 0) {
         sum += price * quantity;
     }
-
     ukupnaCijenaDiv.textContent = `Ukupna cijena: ${sum.toFixed(2)} €`;
     ukupnaCijenaDiv2.textContent = `Ukupna cijena s PDV-om: ${(sum * 1.25).toFixed(2)} €`;
 }
 
-
 const spremiRacunButton = document.getElementById('spremiRacunButton');
 spremiRacunButton.addEventListener('click', async () => {
-
     if (!currentInvoiceId) {
         alert('Dodaj bar jednu stavku prije spremanja računa.');
         return;
     }
 
-    // Ažuriraj detalje računa (uz validaciju)
     const type = document.querySelector('input[name="vrstaDokumenta"]:checked')?.value;
     const date = document.getElementById('datumRacuna').value;
     const time = document.getElementById('vrijemeRacuna').value;
@@ -195,62 +224,42 @@ spremiRacunButton.addEventListener('click', async () => {
     const adress = document.getElementById('adresa').value;
     const oib = document.getElementById('OIB').value;
 
-    // Validacija
     if (!type || !date || !time || !invoiceNumber || !buyer || !adress || !oib) {
         alert('Upiši sve podatke u račun.');
         return;
     }
 
-    // Ažuriraj račun u bazi
     await updateInvoiceDetails();
-
-    // Ažuriraj ukupnu cijenu
-    await updateInvoiceTotal(currentInvoiceId);
-
-    // Preusmjeri korisnika natrag na početnu stranicu
+    await updateInvoiceTotal();
     window.location.href = './index.html';
 });
 
-// Funkcija za ažuriranje ukupne cijene računa
-// Funkcija za ažuriranje ukupne cijene računa
-// Funkcija za ažuriranje ukupne cijene računa
 async function updateInvoiceTotal() {
     if (!currentInvoiceId) {
         console.error("Greška: Trenutni račun nije postavljen!");
         return;
     }
 
-    console.log("Dohvaćanje stavki za račun:", currentInvoiceId);
     const snapshot = await items.orderByChild("invoiceId").equalTo(currentInvoiceId).once("value");
-
     if (!snapshot.exists()) {
         console.error("Nema stavki za račun.");
         return;
     }
 
     const itemsData = snapshot.val();
-    console.log("Stavke dohvaćene:", itemsData);
-
     let totalPrice = 0;
-    // Zbrajanje cijena svih stavki koje pripadaju trenutnom računu
     for (const key in itemsData) {
-        totalPrice += itemsData[key].price * itemsData[key].quantity;  // Cijena stavke * količina
+        totalPrice += itemsData[key].price * itemsData[key].quantity;
     }
-
-    console.log("Ukupna cijena:", totalPrice);
 
     const invoiceRef = firebase.database().ref(`Invoices/${currentInvoiceId}`);
     await invoiceRef.update({
-        totalPrice: (totalPrice*1.25).toFixed(2),  // Ažuriranje ukupne cijene bez PDV-a
+        totalPrice: (totalPrice*1.25).toFixed(2),
     });
 
-    // Ažuriranje prikaza u DOM-u
     ukupnaCijenaDiv.textContent = `Ukupna cijena: ${totalPrice.toFixed(2)} €`;
     ukupnaCijenaDiv2.textContent = `Ukupna cijena s PDV-om: ${(totalPrice * 1.25).toFixed(2)} €`;
-
-    console.log("Račun uspješno ažuriran.");
 }
-
 
 async function updateInvoiceDetails() {
     if (!currentInvoiceId) {
@@ -258,7 +267,6 @@ async function updateInvoiceDetails() {
         return;
     }
 
-    // Dohvaćanje podataka iz forme
     const type = document.querySelector('input[name="vrstaDokumenta"]:checked')?.value;
     const date = document.getElementById('datumRacuna').value;
     const time = document.getElementById('vrijemeRacuna').value;
@@ -267,7 +275,6 @@ async function updateInvoiceDetails() {
     const adress = document.getElementById('adresa').value;
     const oib = document.getElementById('OIB').value;
 
-    // Validacija: Provjera unesenih podataka
     if (!type || !date || !time || !invoiceNumber || !buyer || !adress || !oib) {
         alert("Upiši sve stavke u račun/ponudu.");
         return;
@@ -279,7 +286,6 @@ async function updateInvoiceDetails() {
     }
 
     try {
-        // Ažuriranje računa u Firebase bazi
         const invoiceRef = firebase.database().ref(`Invoices/${currentInvoiceId}`);
         await invoiceRef.update({
             type,
@@ -296,31 +302,23 @@ async function updateInvoiceDetails() {
     }
 }
 
-
 const urlParams = new URLSearchParams(window.location.search);
-currentInvoiceId = urlParams.get('id'); // Dohvati ID kao string
+currentInvoiceId = urlParams.get('id');
 
 if (currentInvoiceId) {
-    loadInvoice(currentInvoiceId); // Prosljeđuje string ID u funkciju loadInvoice
-    
+    loadInvoice(currentInvoiceId);
 }
 
-// Funkcija za učitavanje računa
 async function loadInvoice(id) {
     const invoiceRef = firebase.database().ref(`Invoices/${id}`);
     const invoiceSnapshot = await invoiceRef.once('value');
     
-    // Provjeri postoji li račun
     if (!invoiceSnapshot.exists()) {
         console.error("Račun nije pronađen.");
         return;
     }
     
-    // Dohvati podatke o računu
     const invoice = invoiceSnapshot.val();
-    console.log("Račun podaci:", invoice);
-
-    // Popuni podatke u formi
     document.querySelector(`input[name="vrstaDokumenta"][value="${invoice.type}"]`).checked = true;
     document.getElementById('datumRacuna').value = invoice.date;
     document.getElementById('vrijemeRacuna').value = invoice.time;
@@ -329,13 +327,12 @@ async function loadInvoice(id) {
     document.getElementById('adresa').value = invoice.adress;
     document.getElementById('OIB').value = invoice.oib;
 
-    // Dohvati stavke povezane s ovim računom
-    const itemsSnapshot = await items.orderByChild("invoiceId").equalTo(id).once("value");
+    // Osvježi prikaz posljednjeg broja
+    await updateLastInvoiceDisplay();
 
-    // Provjeri postoji li stavki za račun
+    const itemsSnapshot = await items.orderByChild("invoiceId").equalTo(id).once("value");
     if (itemsSnapshot.exists()) {
         const itemsData = itemsSnapshot.val();
-        // Dodaj svaku stavku u DOM
         for (const key in itemsData) {
             const item = itemsData[key];
             addStavkaToDOM({
@@ -350,10 +347,3 @@ async function loadInvoice(id) {
         console.log("Nema stavki za ovaj račun.");
     }
 }
-
-
-
-
-
-
-
