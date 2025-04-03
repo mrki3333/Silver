@@ -109,7 +109,7 @@ function addStavkaToDOM({ id, name, quantity, unit, price }) {
     stavkaDiv.dataset.id = id;
 
     // Provjera je li jedinica mjere "m2" i formatiranje ispisa
-    const displayUnit = "m²";
+    const displayUnit = "m&sup2;";
 
     stavkaDiv.innerHTML = `
         <div class="stavkeInfo"><p><strong>OPIS:</strong> ${name}</p></div>
