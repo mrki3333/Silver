@@ -60,7 +60,12 @@ async function updateLastInvoiceDisplay() {
     const selectedType = document.querySelector('input[name="vrstaDokumenta"]:checked')?.value;
     if (selectedType) {
         const lastNumber = await getLastInvoiceNumber(selectedType);
-        document.getElementById("zadnjiBrojInfo").textContent = `Posljednji broj ${selectedType}a: ${lastNumber}`;
+        if(selectedType == "Račun"){
+            document.getElementById("zadnjiBrojInfo").textContent = `Posljednji broj računa: ${lastNumber}`;
+        }
+        else{
+            document.getElementById("zadnjiBrojInfo").textContent = `Posljednji broj ponude: ${lastNumber}`;
+        }
     }
 }
 
