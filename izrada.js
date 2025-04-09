@@ -48,7 +48,7 @@ async function getLastInvoiceNumber(type) {
             }
         }
 
-        return lastInvoice ? lastInvoice.invoiceNumber : "Nema dostupne niti jedne ponude";
+        return lastInvoice ? lastInvoice.invoiceNumber : "Nema dostupnih ponuda";
     } catch (error) {
         console.error("Greška pri dohvatu zadnjeg računa:", error);
         return "Greška pri dohvatu";

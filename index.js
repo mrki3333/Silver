@@ -302,7 +302,7 @@ async function generatePdf(buyer, adress, oib, type, invoiceNumber, date, time, 
 
     async function embedFontAndMeasureText() {
 			// Fetch custom font
-      const url1 = 'Calibri.ttf'
+      const url1 = 'Calibri.woff'
       const url2 = 'CalibriBold.ttf'
       const fontBytes1 = await fetch(url1).then(res => res.arrayBuffer())
       const fontBytes2 = await fetch(url2).then(res => res.arrayBuffer())
@@ -342,21 +342,26 @@ async function generatePdf(buyer, adress, oib, type, invoiceNumber, date, time, 
         });
       }
 
-        // Dodajemo tekstove pomoću funkcije drawTextWithoutKerning
-        function drawTextWithoutKerning(page, text, x, y, font, fontSize, color) {
-            let offsetX = x;
-            for (let char of text) {
-                const charWidth = font.widthOfTextAtSize(char, fontSize);
-                page.drawText(char, {
-                    x: offsetX,
-                    y: y,
-                    size: fontSize,
-                    font: font,
-                    color: color,
-                });
-                offsetX += charWidth;
-            }
+      function drawTextWithoutKerning(page, text, x, y, font, fontSize, color) {
+        let offsetX = x;
+        // Normaliziraj tekst da rastavi ligature
+        const normalizedText = text.normalize('NFKD');
+        
+        for (const char of normalizedText) {
+            // Preskoči nevidljive kontrolne znakove
+            if (char.match(/\p{Control}/u)) continue;
+            
+            page.drawText(char, {
+                x: offsetX,
+                y: y,
+                size: fontSize,
+                font: font,
+                color: color,
+                features: { liga: true ,  }// Ispravna sintaksa za onemogućavanje ligatura
+            });
+            offsetX += font.widthOfTextAtSize(char, fontSize);
         }
+    }
 
         // Koristimo drawTextWithoutKerning za ispis svih elemenata
         drawTextWithoutKerning(firstPage, buyer, inchesToPoints(4.12) - Calibri.widthOfTextAtSize(buyer, 11) / 2, pageHeight - inchesToPoints(2.71), Calibri, 11, rgb(0, 0, 0));
