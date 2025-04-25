@@ -31,11 +31,11 @@ function groupInvoicesByMonth(invoices) {
 
         let key;
         if (isNaN(date.getTime())) {
-            key = "Nedovršeni računi/ponude"; // Ako je datum neispravan
+            key = "Nedovršeni računi/ponude";
         } else {
             const year = date.getFullYear();
             const month = String(date.getMonth() + 1).padStart(2, '0');
-            key = `${month}/${year}`; // Formatirano kao MM/YYYY
+            key = `${month}/${year}`;
         }
 
         if (!groupedInvoices[key]) {
@@ -48,7 +48,6 @@ function groupInvoicesByMonth(invoices) {
     return groupedInvoices;
 }
 
-
 // Element za prikaz računa
 const racuniLista = document.getElementById('racuniLista');
 
@@ -58,24 +57,21 @@ async function loadInvoicesGroupedByMonth() {
 
     const groupedInvoices = groupInvoicesByMonth(invoices);
 
-    // Resetiraj listu računa
     racuniLista.innerHTML = '';
 
-    // Prikaz grupiranih računa
     Object.keys(groupedInvoices)
-        .sort((a, b) => new Date(b.split('/')[1], b.split('/')[0] - 1) - new Date(a.split('/')[1], a.split('/')[0] - 1)) // Sortiraj po mjesecu/godini
+        .sort((a, b) => new Date(b.split('/')[1], b.split('/')[0] - 1) - new Date(a.split('/')[1], a.split('/')[0] - 1))
         .forEach((key) => {
             const monthYearDiv = document.createElement('div');
             monthYearDiv.classList.add('monthYear');
-            monthYearDiv.innerHTML = `<h3>${key}</h3>`; // Prikaz mjeseca/godine
+            monthYearDiv.innerHTML = `<h3>${key}</h3>`;
 
             const invoiceList = document.createElement('div');
             invoiceList.classList.add('invoiceList');
-            invoiceList.style.display = 'none'; // Sakrij račune dok korisnik ne klikne na naslov
+            invoiceList.style.display = 'none';
 
-            // Sortiraj račune unutar mjeseca po datumu
             groupedInvoices[key]
-                .sort((a, b) => new Date(b.date) - new Date(a.date)) // Sortiraj po datumu unutar mjeseca (najnoviji prvi)
+                .sort((a, b) => new Date(b.date) - new Date(a.date))
                 .forEach((invoice) => {
                     const racunDiv = document.createElement('div');
                     racunDiv.classList.add('racun');
@@ -83,7 +79,6 @@ async function loadInvoicesGroupedByMonth() {
                     const formattedDate = formatDate(invoice.date);
 
                     racunDiv.innerHTML = `
-
                     <button class="download" data-id="${invoice.id}"></button>
                     <p><span style="font-weight: bold;">TIP:</span> ${invoice.type}</p>
                     <p><span style="font-weight: bold;">DATUM:</span> ${formattedDate}</p>
@@ -103,31 +98,24 @@ async function loadInvoicesGroupedByMonth() {
 
                     racunDiv.querySelector('.deleteButton').addEventListener('click', async (e) => {
                         const id = e.target.getAttribute('data-id');
-                        // Dodaj potvrdu za brisanje računa
                         const confirmDelete = confirm('Jeste li sigurni da želite obrisati ovaj račun?');
-                        if (!confirmDelete) {
-                            return; // Ako korisnik odustane, prekini funkciju
-                        }
+                        if (!confirmDelete) return;
                     
-                        // Obriši račun
                         await firebase.database().ref(`Invoices/${id}`).remove();
                     
-                        // Obriši stavke povezane s računom
                         const itemsSnapshot = await firebase.database().ref('Items').orderByChild('invoiceId').equalTo(id).once('value');
                         if (itemsSnapshot.exists()) {
                             itemsSnapshot.forEach((childSnapshot) => {
-                                childSnapshot.ref.remove(); // Brisanje svake stavke povezane s računom
+                                childSnapshot.ref.remove();
                             });
                         }
                     
-                        // Ponovno učitaj račune
                         loadInvoicesGroupedByMonth();
                     });
                     
                     racunDiv.querySelector('.download').addEventListener('click', async (e) => {
                         const invoiceId = e.target.getAttribute('data-id');  
                     
-                        // Dohvati račun iz Firebase baze podataka
                         const invoiceSnapshot = await firebase.database().ref(`Invoices/${invoiceId}`).once('value');
                         const invoice = invoiceSnapshot.val();
                         if (!invoice) {
@@ -135,14 +123,9 @@ async function loadInvoicesGroupedByMonth() {
                             return;
                         }
                     
-                        // Dohvati sve stavke povezane s računom
                         const itemsSnapshot = await firebase.database().ref('Items').orderByChild('invoiceId').equalTo(invoiceId).once('value');
                         const items = itemsSnapshot.exists() ? Object.values(itemsSnapshot.val()) : [];
                     
-                        console.log("Podaci o računu:", invoice);
-                        console.log("Stavke računa:", items);
-                    
-                        // Proslijedi sve podatke funkciji generatePdf()
                         generatePdf(
                             invoice.buyer,
                             invoice.adress,
@@ -152,18 +135,13 @@ async function loadInvoicesGroupedByMonth() {
                             invoice.date,
                             invoice.time,
                             invoice.totalPrice,
-                            items // Proslijedi stavke kao parametar
+                            items
                         );
                     });
-                    
-
-
-
 
                     invoiceList.appendChild(racunDiv);
                 });
 
-            // Klik za prikaz/sakrivanje računa
             monthYearDiv.addEventListener('click', () => {
                 invoiceList.style.display =
                     invoiceList.style.display === 'none' ? 'block' : 'none';
@@ -174,21 +152,11 @@ async function loadInvoicesGroupedByMonth() {
         });
 }
 
-
-
-
-
-
-
-
-
-
 // Event listener za gumb "Rekreiraj"
 document.addEventListener('click', async (event) => {
     if (event.target.classList.contains('recreateButton')) {
         const originalInvoiceId = event.target.getAttribute('data-id');
 
-        // Dohvati originalni račun
         const originalInvoiceSnapshot = await firebase.database().ref(`Invoices/${originalInvoiceId}`).once('value');
         const originalInvoice = originalInvoiceSnapshot.val();
 
@@ -197,24 +165,21 @@ document.addEventListener('click', async (event) => {
             return;
         }
 
-        // Kreiraj novi račun s istim podacima, ali bez datuma i vremena
         const newInvoiceRef = firebase.database().ref('Invoices').push();
         const newInvoiceId = newInvoiceRef.key;
 
         await newInvoiceRef.set({
             ...originalInvoice,
             id: newInvoiceId,
-            date: '', // Datum ostavi prazan
-            time: '', // Vrijeme ostavi prazno
-            invoiceNumber: '', // Dodaj oznaku kopije
-            totalPrice: 0, // Početna ukupna cijena
+            date: '',
+            time: '',
+            invoiceNumber: '',
+            totalPrice: 0,
         });
 
-        // Dohvati stavke povezane s originalnim računom
         const itemsSnapshot = await items.orderByChild("invoiceId").equalTo(originalInvoiceId).once("value");
         const originalItems = itemsSnapshot.exists() ? Object.values(itemsSnapshot.val()) : [];
 
-        // Kopiraj stavke u novi račun
         for (const item of originalItems) {
             const newItemRef = firebase.database().ref('Items').push();
             await newItemRef.set({
@@ -223,7 +188,6 @@ document.addEventListener('click', async (event) => {
             });
         }
 
-        // Preusmjeri korisnika na stranicu za uređivanje novog računa
         window.location.href = `./izrada.html?id=${newInvoiceId}`;
     }
 });
@@ -236,11 +200,8 @@ function formatDate(dateString) {
     return `${day}.${month}.${year}`;
 }
 
-
-
 async function generatePdf(buyer, adress, oib, type, invoiceNumber, date, time, totalPrice, items) {
     let priceInCents = Math.round(totalPrice * 100);
-    // Formatiraj broj na 15 znamenki s vodećim nulama
     priceInCents = priceInCents.toString().padStart(15, '0');
     let newDate = (formatDate(date));
     newDate = newDate.replace(".", "-");
@@ -261,13 +222,11 @@ async function generatePdf(buyer, adress, oib, type, invoiceNumber, date, time, 
     "\n"+
     "Plaćanje računa br." + invoiceNumber; 
 
-    // Generiraj bar kod
     PDF417.init(hub3_code);
     var barcode = PDF417.getBarcodeArray();
-    var bw = 2; // širina bloka
-    var bh = 2; // visina bloka
+    var bw = 2;
+    var bh = 2;
 
-    // Kreiraj canvas za bar kod
     var canvas = document.createElement('canvas');
     canvas.width = bw * barcode['num_cols'];
     canvas.height = bh * barcode['num_rows'];
@@ -284,176 +243,197 @@ async function generatePdf(buyer, adress, oib, type, invoiceNumber, date, time, 
         y += bh;
     }
 
-    // Konvertiraj canvas u URL
     var imageDataUrl = canvas.toDataURL('image/png');
-
-    
     
     function inchesToPoints(inches) {
-        return inches * 72; // 1 inch = 72 points
+        return inches * 72;
     }
 
-    // Postavi dimenzije A4 stranice u inchima
     const paperWidthInches = 8.27;
     const paperHeightInches = 11.69;
     const pageWidth = inchesToPoints(paperWidthInches);
     const pageHeight = inchesToPoints(paperHeightInches);
-        const { PDFDocument, rgb } = PDFLib
+    const { PDFDocument, rgb } = PDFLib;
 
     async function embedFontAndMeasureText() {
-			// Fetch custom font
-      const url1 = 'Calibri.woff'
-      const url2 = 'CalibriBold.ttf'
-      const fontBytes1 = await fetch(url1).then(res => res.arrayBuffer())
-      const fontBytes2 = await fetch(url2).then(res => res.arrayBuffer())
-      // Create a new PDFDocument
-      const urla= 'racunponuda.pdf'; // Provjerite putanju PDF-a
-        const existingPdfBytes = await fetch(urla).then(res => {
-            if (!res.ok) {
-                throw new Error('PDF nije pronađen!');
-            }
-            return res.arrayBuffer();
-        });
+      const url1 = 'FiraCode-Regular.ttf';
+      const url2 = 'FiraCode-SemiBold.ttf';
+      const fontBytes1 = await fetch(url1).then(res => res.arrayBuffer());
+      const fontBytes2 = await fetch(url2).then(res => res.arrayBuffer());
+      
+      const urla= 'racunponuda.pdf';
+      const existingPdfBytes = await fetch(urla).then(res => {
+          if (!res.ok) {
+              throw new Error('PDF nije pronađen!');
+          }
+          return res.arrayBuffer();
+      });
 
-        // Učitaj PDF pomoću pdf-lib
-        const pdfDoc = await PDFLib.PDFDocument.load(existingPdfBytes);
-        const pages = pdfDoc.getPages();
-        const firstPage = pages[0]; // Pretpostavljamo da dodajemo tekst na prvu stranicu
+      const pdfDoc = await PDFLib.PDFDocument.load(existingPdfBytes);
+      const pages = pdfDoc.getPages();
+      const firstPage = pages[0];
 
-      // Register the `fontkit` instance
-      pdfDoc.registerFontkit(fontkit)
-
-      // Embed our custom font in the document
+      pdfDoc.registerFontkit(fontkit);
       const Calibri = await pdfDoc.embedFont(fontBytes1);
       const CalibriBold = await pdfDoc.embedFont(fontBytes2);
     
-    
       const pngImage = await pdfDoc.embedPng(imageDataUrl);
-      const pngDims = pngImage.scale(0.55);  // Prilagodi veličinu slike
-  
+      const pngDims = pngImage.scale(0.55);
 
-      // Dodaj bar kod u donji lijevi kut (koristimo koordinate x = 50, y = 50)
-      if(type == "Račun"){
+      if(type == "Račun") {
         firstPage.drawImage(pngImage, {
-            x: inchesToPoints(1.2),  // Donji lijevi kut
+            x: inchesToPoints(1.2),
             y: pageHeight - inchesToPoints(10.2),
             width: (pngDims.width)*0.85,
             height: (pngDims.height)*0.85,
         });
       }
 
-      function drawTextWithoutKerning(page, text, x, y, font, fontSize, color) {
-        let offsetX = x;
-        // Normaliziraj tekst da rastavi ligature
-        const normalizedText = text.normalize('NFKD');
-        
-        for (const char of normalizedText) {
-            // Preskoči nevidljive kontrolne znakove
-            if (char.match(/\p{Control}/u)) continue;
-            
-            page.drawText(char, {
-                x: offsetX,
-                y: y,
-                size: fontSize,
-                font: font,
-                color: color,
-                features: { liga: true ,  }// Ispravna sintaksa za onemogućavanje ligatura
-            });
-            offsetX += font.widthOfTextAtSize(char, fontSize);
-        }
-    }
+      // Kupac
+      firstPage.drawText(buyer, {
+          x: inchesToPoints(4.12) - Calibri.widthOfTextAtSize(buyer, 11) / 2,
+          y: pageHeight - inchesToPoints(2.71),
+          size: 11,
+          font: Calibri,
+          color: rgb(0, 0, 0),
+      });
 
-        // Koristimo drawTextWithoutKerning za ispis svih elemenata
-        drawTextWithoutKerning(firstPage, buyer, inchesToPoints(4.12) - Calibri.widthOfTextAtSize(buyer, 11) / 2, pageHeight - inchesToPoints(2.71), Calibri, 11, rgb(0, 0, 0));
+      // Adresa
+      firstPage.drawText(adress, {
+          x: inchesToPoints(4.12) - Calibri.widthOfTextAtSize(adress, 11) / 2,
+          y: pageHeight - inchesToPoints(3.01),
+          size: 11,
+          font: Calibri,
+          color: rgb(0, 0, 0),
+      });
 
-        drawTextWithoutKerning(firstPage, adress, inchesToPoints(4.12) - Calibri.widthOfTextAtSize(adress, 11) / 2, pageHeight - inchesToPoints(3.01), Calibri, 11, rgb(0, 0, 0));
+      // OIB
+      firstPage.drawText(oib, {
+          x: inchesToPoints(4.12) - Calibri.widthOfTextAtSize(oib, 11) / 2,
+          y: pageHeight - inchesToPoints(3.32),
+          size: 11,
+          font: Calibri,
+          color: rgb(0, 0, 0),
+      });
 
-        drawTextWithoutKerning(firstPage, oib, inchesToPoints(4.12) - Calibri.widthOfTextAtSize(oib, 11) / 2, pageHeight - inchesToPoints(3.32), Calibri, 11, rgb(0, 0, 0));
+      // Broj računa
+      firstPage.drawText(type + " br." + invoiceNumber, {
+          x: inchesToPoints(1.8) - Calibri.widthOfTextAtSize(invoiceNumber, 11) / 2,
+          y: pageHeight - inchesToPoints(3.76),
+          size: 11,
+          font: CalibriBold,
+          color: rgb(0, 0, 0),
+      });
 
-        drawTextWithoutKerning(firstPage, type + " br." + invoiceNumber, inchesToPoints(1.8) - Calibri.widthOfTextAtSize(invoiceNumber, 11) / 2, pageHeight - inchesToPoints(3.76), CalibriBold, 11, rgb(0, 0, 0));
+      const formattedDate = formatDate(date);
+      firstPage.drawText(" " + formattedDate + "  " + time, {
+          x: inchesToPoints(1.62),
+          y: pageHeight - inchesToPoints(8.41),
+          size: 9,
+          font: CalibriBold,
+          color: rgb(0, 0, 0),
+      });
 
-        const formattedDate = formatDate(date);
-        drawTextWithoutKerning(firstPage, " " + formattedDate + "  " + time, inchesToPoints(1.62), pageHeight - inchesToPoints(8.41), CalibriBold, 9, rgb(0, 0, 0));
-        let totalPriceNew = totalPrice;
-        totalPriceNew = parseFloat(totalPriceNew);
-        totalPriceNew = totalPriceNew / 1.25;
-        let totalPriceNew3 =  totalPriceNew;
-        totalPriceNew = totalPriceNew.toFixed(2).replace(/\./g, ",");
-        firstPage.drawText(totalPriceNew , {
-            x: inchesToPoints(7.43) -  CalibriBold.widthOfTextAtSize(totalPriceNew, 11),
-            y: pageHeight-inchesToPoints(7.81),
-            size: 11,
-            font: CalibriBold,
-            color: rgb(0, 0, 0),
-        })
+      let totalPriceNew = totalPrice;
+      totalPriceNew = parseFloat(totalPriceNew);
+      totalPriceNew = totalPriceNew / 1.25;
+      let totalPriceNew3 =  totalPriceNew;
+      totalPriceNew = totalPriceNew.toFixed(2).replace(/\./g, ",");
+      firstPage.drawText(totalPriceNew , {
+          x: inchesToPoints(7.43) -  CalibriBold.widthOfTextAtSize(totalPriceNew, 11),
+          y: pageHeight-inchesToPoints(7.81),
+          size: 11,
+          font: CalibriBold,
+          color: rgb(0, 0, 0),
+      });
 
-        totalPriceNew3 = totalPriceNew3 * 0.25;
-        totalPriceNew3 = totalPriceNew3.toFixed(2).replace(/\./g, ",");
-        firstPage.drawText(totalPriceNew3, {
-            x: inchesToPoints(7.43) - Calibri.widthOfTextAtSize(totalPriceNew3, 11),
-            y: pageHeight-inchesToPoints(8),
-            size: 11,
-            font: Calibri,
-            color: rgb(0, 0, 0),
-        })
-        let totalPriceNew2 = totalPrice;
-        totalPriceNew2 = parseFloat(totalPriceNew2);
-        totalPriceNew2 = totalPriceNew2.toFixed(2).replace(/\./g, ",");
-        firstPage.drawText(totalPriceNew2, {
-            x: inchesToPoints(7.43) -  CalibriBold.widthOfTextAtSize(totalPriceNew2, 11),
-            y: pageHeight-inchesToPoints(8.2),
-            size: 11,
-            font: CalibriBold,
-            color: rgb(0, 0, 0),
-      })
+      totalPriceNew3 = totalPriceNew3 * 0.25;
+      totalPriceNew3 = totalPriceNew3.toFixed(2).replace(/\./g, ",");
+      firstPage.drawText(totalPriceNew3, {
+          x: inchesToPoints(7.43) - Calibri.widthOfTextAtSize(totalPriceNew3, 11),
+          y: pageHeight-inchesToPoints(8),
+          size: 11,
+          font: Calibri,
+          color: rgb(0, 0, 0),
+      });
 
+      let totalPriceNew2 = totalPrice;
+      totalPriceNew2 = parseFloat(totalPriceNew2);
+      totalPriceNew2 = totalPriceNew2.toFixed(2).replace(/\./g, ",");
+      firstPage.drawText(totalPriceNew2, {
+          x: inchesToPoints(7.43) -  CalibriBold.widthOfTextAtSize(totalPriceNew2, 11),
+          y: pageHeight-inchesToPoints(8.22),
+          size: 11,
+          font: CalibriBold,
+          color: rgb(0, 0, 0),
+      });
 
-      const maxItems = 7; // Maksimalni broj stavki koje želimo ispisati
-      const maxWidth = inchesToPoints(3); // Maksimalna širina teksta u točkama
-        const lineHeight = 10; // Visina između redaka u točkama (ovisno o veličini fonta)  
-        const initialYCenter = pageHeight - inchesToPoints(4.64); // Početna vertikalna koordinata
-        let currentY = initialYCenter; // Trenutna vertikalna pozicija za ispis
+      const maxItems = 7;
+      const maxWidth = inchesToPoints(3);
+      const lineHeight = 10;
+      const initialYCenter = pageHeight - inchesToPoints(4.64);
+      let currentY = initialYCenter;
 
-        items.forEach((item, index) => {
-        // Ispis naziva stavke
+      items.forEach((item, index) => {
+        // Naziv stavke
         drawWrappedTextCentered(
             firstPage,
             item.name,
-            inchesToPoints(1.1), // x koordinata (horizontalno centriranje događa se unutar funkcije)
-            currentY, // Vertikalna središnja koordinata
+            inchesToPoints(1.1),
+            currentY,
             CalibriBold,
-            9.5,
+            7.6,
             maxWidth,
             lineHeight,
             rgb(0, 0, 0),
             Calibri
         );
 
-        // Ispis jedinice
-        drawTextWithoutKerning(firstPage, item.unit + ".", inchesToPoints(4.35) - Calibri.widthOfTextAtSize(item.unit + ".", 9) / 2, currentY - inchesToPoints(0.06), Calibri, 9, rgb(0, 0, 0));
-
-        // Ispis količine
-        drawTextWithoutKerning(firstPage, item.quantity + " ", inchesToPoints(4.95) - Calibri.widthOfTextAtSize(item.quantity + " ", 9) / 2, currentY - inchesToPoints(0.06), Calibri, 9, rgb(0, 0, 0));
-
-        // Ispis cijene
-        drawTextWithoutKerning(firstPage, item.price.toFixed(2).replace(/\./g, ",") + " €", inchesToPoints(5.79) - Calibri.widthOfTextAtSize(item.price.toFixed(2).replace(/\./g, ",") + " €", 9) / 2, currentY - inchesToPoints(0.06), Calibri, 9, rgb(0, 0, 0));
-
-        // Ispis ukupne cijene (cijena * količina)
-        drawTextWithoutKerning(firstPage, (item.price * item.quantity).toFixed(2).replace(/\./g, ",") + " €", inchesToPoints(6.84) - Calibri.widthOfTextAtSize((item.price * item.quantity).toFixed(2).replace(/\./g, ",") + " €", 9) / 2, currentY - inchesToPoints(0.06), Calibri, 9, rgb(0, 0, 0));
-
-
-        // Ažuriranje y pozicije za sljedeću stavku
-        if (index === 0) {
-            currentY -= inchesToPoints(0.46); // Za prvu stavku (ako je samo jedna)
-        } else {
-            currentY -= inchesToPoints(0.4); // Za svaku sljedeću stavku
-        }
-
-
+        // Jedinica
+        firstPage.drawText(item.unit + ".", {
+            x: inchesToPoints(4.35) - Calibri.widthOfTextAtSize(item.unit + ".", 9) / 2,
+            y: currentY - inchesToPoints(0.06),
+            size: 9,
+            font: Calibri,
+            color: rgb(0, 0, 0),
         });
-        const remainingRows = maxItems - items.length;
-        for (let i = 0; i < remainingRows; i++) {
-        // Ispis ukupne cijene (0,00 €)
+
+        // Količina
+        firstPage.drawText(item.quantity + " ", {
+            x: inchesToPoints(4.95) - Calibri.widthOfTextAtSize(item.quantity + " ", 9) / 2,
+            y: currentY - inchesToPoints(0.06),
+            size: 9,
+            font: Calibri,
+            color: rgb(0, 0, 0),
+        });
+
+        // Cijena
+        firstPage.drawText(item.price.toFixed(2).replace(/\./g, ",") + " €", {
+            x: inchesToPoints(5.79) - Calibri.widthOfTextAtSize(item.price.toFixed(2).replace(/\./g, ",") + " €", 9) / 2,
+            y: currentY - inchesToPoints(0.06),
+            size: 9,
+            font: Calibri,
+            color: rgb(0, 0, 0),
+        });
+
+        // Ukupna cijena
+        firstPage.drawText((item.price * item.quantity).toFixed(2).replace(/\./g, ",") + " €", {
+            x: inchesToPoints(6.84) - Calibri.widthOfTextAtSize((item.price * item.quantity).toFixed(2).replace(/\./g, ",") + " €", 9) / 2,
+            y: currentY - inchesToPoints(0.06),
+            size: 9,
+            font: Calibri,
+            color: rgb(0, 0, 0),
+        });
+
+        if (index === 0) {
+            currentY -= inchesToPoints(0.46);
+        } else {
+            currentY -= inchesToPoints(0.4);
+        }
+      });
+
+      const remainingRows = maxItems - items.length;
+      for (let i = 0; i < remainingRows; i++) {
         firstPage.drawText("0,00 €", {
             x: inchesToPoints(6.84) - Calibri.widthOfTextAtSize("0,00 €", 9) / 2,
             y: currentY - inchesToPoints(0.06),
@@ -462,35 +442,38 @@ async function generatePdf(buyer, adress, oib, type, invoiceNumber, date, time, 
             color: rgb(0, 0, 0),
         });
 
-        // Ažuriranje y pozicije za sljedeći redak
-        currentY -= inchesToPoints(0.38); // Koristimo istu visinu kao za ostale stavke
-        }
-        
-        if(type == "Račun"){
-            drawTextWithoutKerning(firstPage, "Račun sastavio: Silvije Barbarić", inchesToPoints(0.72), pageHeight - inchesToPoints(8.6), CalibriBold, 9, rgb(0, 0, 0));
-        }
-        else{
-            drawTextWithoutKerning(firstPage, "Ponudu sastavio: Silvije Barbarić", inchesToPoints(0.72), pageHeight - inchesToPoints(8.6), CalibriBold, 9, rgb(0, 0, 0));
-        }
+        currentY -= inchesToPoints(0.38);
+      }
+      
+      if(type == "Račun") {
+        firstPage.drawText("Račun sastavio: Silvije Barbarić", {
+            x: inchesToPoints(0.73),
+            y: pageHeight - inchesToPoints(8.6),
+            size: 7.8,
+            font: CalibriBold,
+            color: rgb(0, 0, 0),
+        });
+      } else {
+        firstPage.drawText("Ponudu sastavio: Silvije Barbarić", {
+            x: inchesToPoints(0.73),
+            y: pageHeight - inchesToPoints(8.6),
+            size: 7.8,
+            font: CalibriBold,
+            color: rgb(0, 0, 0),
+        });
+      }
 
-      const pdfBytes = await pdfDoc.save()
-
+      const pdfBytes = await pdfDoc.save();
       download(pdfBytes, type + "_" + invoiceNumber + "__DATUM:" + formattedDate + ".pdf", "application/pdf");
-    
-
     }
+    
     embedFontAndMeasureText();
-
-
-
-
 
     function drawWrappedTextCentered(page, text, x, yCenter, font, fontSize, maxWidth, lineHeight, color, font) {
         const words = text.split(" ");
         let line = "";
         let lines = [];
       
-        // Kreiraj retke koji ne prelaze maxWidth
         for (let word of words) {
           const testLine = line + (line ? " " : "") + word;
           const lineWidth = font.widthOfTextAtSize(testLine, fontSize);
@@ -499,38 +482,27 @@ async function generatePdf(buyer, adress, oib, type, invoiceNumber, date, time, 
             line = testLine;
           } else {
             lines.push(line);
-            line = word; // Započni novi redak
+            line = word;
           }
         }
-        // Dodaj zadnji red
         if (line) lines.push(line);
       
-        // Izračunaj ukupnu visinu teksta
         const totalTextHeight = lines.length * lineHeight;
-      
-        // Početna y koordinata za centriranje teksta
         const yStart = yCenter + totalTextHeight / 2 - lineHeight;
       
-        // Iscrtavanje svakog retka
         for (let i = 0; i < lines.length; i++) {
           const lineWidth = font.widthOfTextAtSize(lines[i], fontSize);
       
-          // Centriraj svaki redak horizontalno
           page.drawText(lines[i], {
-            x: x, // ovak se ne centrira po x osi
-            //ovak se centrira po x osi//x: x - lineWidth / 2, 
+            x: x,
             y: yStart - i * lineHeight,
             size: fontSize,
             font: font,
             color: color,
           });
         }
-      }
+    }
 }
-
-
-
-
 
 // Učitaj račune pri pokretanju stranice
 loadInvoicesGroupedByMonth();
